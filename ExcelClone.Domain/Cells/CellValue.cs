@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using ExcelClone.Domain.Abstractions;
 
 namespace ExcelClone.Domain.Cells;
 
@@ -9,21 +8,19 @@ public readonly struct CellValue
 
     private readonly bool _boolValue;
     private readonly decimal _decimalValue;
-    private readonly Error _errorValue;
+    private readonly string _errorValue = string.Empty;
 
     public CellValue(bool value)
     {
         _boolValue = value;
-        _errorValue = Error.None();
     }
 
     public CellValue(decimal value)
     {
         _decimalValue = value;
-        _errorValue = Error.None();
     }
 
-    public CellValue(Error value)
+    public CellValue(string value)
     {
         _errorValue = value;
     }

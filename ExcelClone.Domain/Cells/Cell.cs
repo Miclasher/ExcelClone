@@ -12,15 +12,29 @@ public sealed class Cell
     {
         Address = address;
         RawExpression = string.Empty;
-        CellValue = new CellValue(0m);
+        Value = new CellValue(0m);
     }
 
     public Address Address { get; private set; }
     public string RawExpression {get; private set; }
-    public CellValue CellValue { get; private set; }
+    public CellValue Value { get; private set; }
+
+    public void SetExpression(string expression, Parser parser)
+    {
+        ArgumentNullException.ThrowIfNull(expression);
+
+        RawExpression = expression;
+        _astNode = parser.Parse(expression);
+    }
 
     public void Recalculate(Table context)
     {
-        throw new NotImplementedException();
+        if (_astNode is null)
+        {
+            Value = new CellValue(RawExpression);
+            return;
+        }
+
+        var evaluator = new 
     }
 }
