@@ -21,4 +21,22 @@ public class Table
     {
         return _cells.GetOrAdd(address, address => new Cell(address));
     }
+
+    public void SetExpression(Address address, string expression)
+    {
+        ArgumentNullException.ThrowIfNull(expression);
+        ArgumentNullException.ThrowIfNull(address);
+
+        var cell = GetCell(address);
+        cell.SetExpression(expression, _parser);
+        RecalculateAll();
+    }
+
+    private void RecalculateAll()
+    {
+        foreach (var cell in _cells.Values)
+        {
+            cell.Recalculate(this);
+        }
+    }
 }

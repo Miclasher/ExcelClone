@@ -1,4 +1,6 @@
-﻿namespace ExcelClone.Domain.ExpressionLogic;
+﻿using ExcelClone.Domain.ExpressionLogic.AstNodes;
+
+namespace ExcelClone.Domain.ExpressionLogic;
 
 public sealed class Parser
 {

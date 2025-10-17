@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using ExcelClone.Domain.ExpressionLogic;
+using ExcelClone.Domain.ExpressionLogic.AstNodes;
 using ExcelClone.Domain.Tables;
 
 namespace ExcelClone.Domain.Cells;
@@ -12,7 +13,7 @@ public sealed class Cell
     {
         Address = address;
         RawExpression = string.Empty;
-        Value = new CellValue(0m);
+        Value = new CellValue(string.Empty);
     }
 
     public Address Address { get; private set; }
@@ -31,10 +32,10 @@ public sealed class Cell
     {
         if (_astNode is null)
         {
-            Value = new CellValue(RawExpression);
             return;
         }
 
-        var evaluator = new 
+        var evaluator = new Evaluator(context);
+        Value = evaluator.Evaluate(_astNode);
     }
 }
