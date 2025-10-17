@@ -23,7 +23,7 @@ public class Evaluator
         _ => new CellValue("#EVAL!")
     };
 
-    private CellValue HandleValueNode(ValueNode node) => node.Value switch
+    private static CellValue HandleValueNode(ValueNode node) => node.Value switch
     {
         decimal d => new CellValue(d),
         bool b => new CellValue(b),

@@ -9,7 +9,7 @@ public class Table
 {
     public string Id { get; private init; }
 
-    private readonly ConcurrentDictionary<Address, Cell> _cells;
+    private readonly ConcurrentDictionary<Address, Cell> _cells = new();
     private readonly Parser _parser = new();
 
     public Table(string id)
