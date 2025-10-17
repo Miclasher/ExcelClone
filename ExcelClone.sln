@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelClone.Infrastructure",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelClone.Presentation", "ExcelClone.Presentation\ExcelClone.Presentation.csproj", "{626CA05F-5EC8-4D42-8BBE-613C86F117AA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelClone.Tests", "ExcelClone.Tests\ExcelClone.Tests.csproj", "{B146917A-C365-4320-A3F2-524A43094DDC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{626CA05F-5EC8-4D42-8BBE-613C86F117AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{626CA05F-5EC8-4D42-8BBE-613C86F117AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{626CA05F-5EC8-4D42-8BBE-613C86F117AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B146917A-C365-4320-A3F2-524A43094DDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B146917A-C365-4320-A3F2-524A43094DDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B146917A-C365-4320-A3F2-524A43094DDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B146917A-C365-4320-A3F2-524A43094DDC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

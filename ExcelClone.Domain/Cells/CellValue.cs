@@ -8,21 +8,24 @@ public readonly struct CellValue
 
     private readonly bool _boolValue;
     private readonly decimal _decimalValue;
-    private readonly string _errorValue = string.Empty;
+    private readonly string _stringValue = string.Empty;
 
     public CellValue(bool value)
     {
+        Type = CellValueType.Bool;
         _boolValue = value;
     }
 
     public CellValue(decimal value)
     {
+        Type = CellValueType.Decimal;
         _decimalValue = value;
     }
 
     public CellValue(string value)
     {
-        _errorValue = value;
+        Type = CellValueType.String;
+        _stringValue = value;
     }
 
     public object GetValue()
@@ -31,7 +34,7 @@ public readonly struct CellValue
         {
             CellValueType.Bool => _boolValue,
             CellValueType.Decimal => _decimalValue,
-            CellValueType.String => _errorValue,
+            CellValueType.String => _stringValue,
             _ => throw new UnreachableException("Tried to get value of cell with unknown value type")
         };
     }
@@ -46,5 +49,16 @@ public readonly struct CellValue
 
         value = _decimalValue;
         return false;
+    }
+
+    public override string ToString()
+    {
+        return Type switch
+        {
+            CellValueType.Decimal => _decimalValue.ToString(System.Globalization.CultureInfo.InvariantCulture),
+            CellValueType.Bool => _boolValue ? "TRUE" : "FALSE",
+            CellValueType.String => _stringValue,
+            _ => string.Empty
+        };
     }
 }

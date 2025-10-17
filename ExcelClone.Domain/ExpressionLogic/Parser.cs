@@ -13,17 +13,27 @@ public sealed class Parser
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(expression)) return new ValueNode(string.Empty);
-            if (!expression.StartsWith('=')) return ParseAsLiteral(expression);
+            if (string.IsNullOrWhiteSpace(expression))
+                return new ValueNode(string.Empty);
+
+            if (!expression.StartsWith("="))
+                return ParseAsLiteral(expression);
 
             _tokens = Tokenizer.Tokenize(expression[1..]);
             _position = 0;
 
+            if (IsAtEnd())
+            {
+                return new ValueNode(string.Empty);
+            }
+
             var result = ParseExpression();
-            if (_position < _tokens.Count)
+
+            if (!IsAtEnd())
             {
                 return new ErrorNode("#SYNTAX!");
             }
+
             return result;
         }
         catch (Exception)
@@ -63,6 +73,8 @@ public sealed class Parser
         {
             return new ValueNode(Previous().Literal!);
         }
+
+
         if (Match(TokenType.Identifier))
         {
             var identifier = Previous().Value;
@@ -77,7 +89,7 @@ public sealed class Parser
                 Consume(TokenType.RightParen, "Expected ')' after arguments.");
                 return new FunctionCallNode(identifier.ToLower(), args);
             }
-            return new CellReferenceNode(new Address(identifier));
+            return new CellReferenceNode(identifier);
         }
         if (Match(TokenType.LeftParen))
         {
@@ -88,7 +100,6 @@ public sealed class Parser
         throw new Exception("Parse error: expected expression.");
     }
 
-    // --- Допоміжні методи для розбору ---
     private bool Match(params TokenType[] types)
     {
         foreach (var type in types)
@@ -107,9 +118,13 @@ public sealed class Parser
     private bool IsAtEnd() => Peek().Type == TokenType.Eof;
     private Token Peek() => _tokens[_position];
     private Token Previous() => _tokens[_position - 1];
-    private static ValueNode ParseAsLiteral(string term)
+    private AstNode ParseAsLiteral(string term)
     {
-        if (decimal.TryParse(term, out var decVal)) return new ValueNode(decVal);
+        if (decimal.TryParse(term, out decimal decimalValue))
+        {
+            return new ValueNode(decimalValue);
+        }
+        
         if (bool.TryParse(term, out var boolVal)) return new ValueNode(boolVal);
         return new ValueNode(term);
     }
