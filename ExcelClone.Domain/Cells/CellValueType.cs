@@ -2,7 +2,7 @@
 
 public enum CellValueType
 {
-    Error,
+    String,
     Decimal,
     Bool
 }

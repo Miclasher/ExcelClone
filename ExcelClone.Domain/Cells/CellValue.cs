@@ -31,8 +31,20 @@ public readonly struct CellValue
         {
             CellValueType.Bool => _boolValue,
             CellValueType.Decimal => _decimalValue,
-            CellValueType.Error => _errorValue,
+            CellValueType.String => _errorValue,
             _ => throw new UnreachableException("Tried to get value of cell with unknown value type")
         };
+    }
+
+    public bool TryGetDecimal(out decimal value)
+    {
+        if (Type == CellValueType.Decimal)
+        {
+            value = _decimalValue;
+            return true;
+        }
+
+        value = _decimalValue;
+        return false;
     }
 }
