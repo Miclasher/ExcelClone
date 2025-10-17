@@ -3,7 +3,43 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35208.52
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelClone.Domain", "ExcelClone.Domain\ExcelClone.Domain.csproj", "{8FAA6684-9EDF-4277-AC1E-9D1D0A076C76}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelClone.Services.Abstractions", "ExcelClone.Services.Abstractions\ExcelClone.Services.Abstractions.csproj", "{7AC39654-B031-4C5E-ABA0-DFD2A5AD2718}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelClone.Services", "ExcelClone.Services\ExcelClone.Services.csproj", "{91DBA985-8AF2-4233-B84A-575E51F9C63E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelClone.Infrastructure", "ExcelClone.Infrastructure\ExcelClone.Infrastructure.csproj", "{E239FA82-698A-45A6-95C1-42B7F8560149}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelClone.Presentation", "ExcelClone.Presentation\ExcelClone.Presentation.csproj", "{626CA05F-5EC8-4D42-8BBE-613C86F117AA}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8FAA6684-9EDF-4277-AC1E-9D1D0A076C76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FAA6684-9EDF-4277-AC1E-9D1D0A076C76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FAA6684-9EDF-4277-AC1E-9D1D0A076C76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FAA6684-9EDF-4277-AC1E-9D1D0A076C76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7AC39654-B031-4C5E-ABA0-DFD2A5AD2718}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AC39654-B031-4C5E-ABA0-DFD2A5AD2718}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AC39654-B031-4C5E-ABA0-DFD2A5AD2718}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AC39654-B031-4C5E-ABA0-DFD2A5AD2718}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91DBA985-8AF2-4233-B84A-575E51F9C63E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91DBA985-8AF2-4233-B84A-575E51F9C63E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91DBA985-8AF2-4233-B84A-575E51F9C63E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91DBA985-8AF2-4233-B84A-575E51F9C63E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E239FA82-698A-45A6-95C1-42B7F8560149}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E239FA82-698A-45A6-95C1-42B7F8560149}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E239FA82-698A-45A6-95C1-42B7F8560149}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E239FA82-698A-45A6-95C1-42B7F8560149}.Release|Any CPU.Build.0 = Release|Any CPU
+		{626CA05F-5EC8-4D42-8BBE-613C86F117AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{626CA05F-5EC8-4D42-8BBE-613C86F117AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{626CA05F-5EC8-4D42-8BBE-613C86F117AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{626CA05F-5EC8-4D42-8BBE-613C86F117AA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
