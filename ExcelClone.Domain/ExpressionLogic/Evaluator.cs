@@ -16,7 +16,7 @@ public class Evaluator
     public CellValue Evaluate(AstNode node) => node switch
     {
         ValueNode vn => HandleValueNode(vn),
-        CellReferenceNode crn => _context.GetCell(crn.CellAddress).Value,
+        CellReferenceNode crn => HandleCellReference(crn),
         BinaryOperationNode bon => PerformBinaryOperation(bon),
         FunctionCallNode fcn => PerformFunctionCall(fcn),
         ErrorNode en => new CellValue(en.Message),
@@ -30,6 +30,13 @@ public class Evaluator
         string s => new CellValue(s),
         _ => new CellValue("#VALUE!")
     };
+
+    private CellValue HandleCellReference(CellReferenceNode node)
+    {
+        var cell = _context.GetCell(node.CellAddress);
+
+        return cell.Value.Type == CellValueType.String ? new CellValue(0) : cell.Value;
+    }
 
     private CellValue PerformFunctionCall(FunctionCallNode fcn)
     { 
