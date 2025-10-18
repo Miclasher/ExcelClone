@@ -76,6 +76,16 @@ public class Evaluator
         if (left.Type == CellValueType.String) return left;
         if (right.Type == CellValueType.String) return right;
 
+        if (left.TryGetBool(out var leftBool) && right.TryGetBool(out var rightBool))
+        {
+            return opNode.Op switch
+            {
+                "=" => new CellValue(leftBool == rightBool),
+                "<>" => new CellValue(leftBool != rightBool),
+                _ => new CellValue("#VALUE!") // Other ops are invalid for two booleans
+            };
+        }
+
         if (!left.TryGetDecimal(out var leftDec) || !right.TryGetDecimal(out var rightDec))
         {
             return new CellValue("#VALUE!");

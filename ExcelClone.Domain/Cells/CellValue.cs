@@ -61,4 +61,16 @@ public readonly struct CellValue
             _ => string.Empty
         };
     }
+
+    public bool TryGetBool(out bool cellValue)
+    {
+        if (Type == CellValueType.Bool)
+        {
+            cellValue = _boolValue;
+            return true;
+        }
+        
+        cellValue = _boolValue;
+        return false;
+    }
 }
