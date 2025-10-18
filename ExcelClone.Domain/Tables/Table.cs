@@ -22,7 +22,7 @@ public class Table
 
     public Cell GetCell(Address address)
     {
-        return _cells.GetOrAdd(address, address => new Cell(address));
+        return _cells.GetOrAdd(address, addressOfNewCell => new Cell(addressOfNewCell));
     }
 
     public void SetExpression(Address address, string expression)
@@ -108,12 +108,9 @@ public class Table
 
         if (_cells.TryGetValue(address, out var cell))
         {
-            foreach (var dependency in cell.Dependencies)
+            if (cell.Dependencies.Any(dependency => !Visit(dependency, visited, temporaryMark, result)))
             {
-                if (!Visit(dependency, visited, temporaryMark, result))
-                {
-                    return false;
-                }
+                return false;
             }
         }
         
@@ -133,5 +130,10 @@ public class Table
                 cell.Value = new CellValue("#REF!");
             }
         }
+    }
+
+    public bool TryGetCell(Address address, out Cell o)
+    {
+        return _cells.TryGetValue(address, out o!);
     }
 }

@@ -33,7 +33,10 @@ public class Evaluator
 
     private CellValue HandleCellReference(CellReferenceNode node)
     {
-        var cell = _context.GetCell(node.CellAddress);
+        if (!_context.TryGetCell(node.CellAddress, out var cell))
+        {
+            return new CellValue("#REF!");
+        }
 
         return cell.Value.Type == CellValueType.String ? new CellValue(0) : cell.Value;
     }
