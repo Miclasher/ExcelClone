@@ -8,7 +8,7 @@ namespace ExcelClone.Tests
     public class ParserTests
     {
         [TestMethod]
-        public void Parse_SimpleMultiplication_ReturnsBinaryOperationNode()
+        public void SimpleMultiplicationParserTest()
         {
             var parser = new Parser();
             

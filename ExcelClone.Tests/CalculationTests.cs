@@ -14,7 +14,7 @@ public class CalculationTests
     }
 
     [TestMethod]
-    public void Test1_BigNumberArithmetic_ShouldMaintainDecimalPrecision()
+    public void BigNumberTest()
     {
         _table.SetExpression("A1", "=12333333333333 * 2");
         var cell = _table.GetCell("A1");
@@ -22,7 +22,7 @@ public class CalculationTests
     }
 
     [TestMethod]
-    public void Test2_DependencyChain_ShouldUpdateAutomatically()
+    public void DependancyChainCalculationTest()
     {
         _table.SetExpression("A2", "10");
         _table.SetExpression("B2", "=A2 * 2");
@@ -39,7 +39,7 @@ public class CalculationTests
     }
 
     [TestMethod]
-    public void Test3_ComplexBooleanLogic_ShouldEvaluateCorrectly()
+    public void ComplexBoolLogicTest()
     {
         _table.SetExpression("A1", "50");
         _table.SetExpression("B1", "100");
@@ -55,7 +55,7 @@ public class CalculationTests
     }
 
     [TestMethod]
-    public void Test4_TypeMismatch_ShouldReturnValueError()
+    public void TypeMismatchErrorTest()
     {
         _table.SetExpression("E2", "TRUE");
         _table.SetExpression("F2", "=E2 + 5");
@@ -65,7 +65,7 @@ public class CalculationTests
     }
 
     [TestMethod]
-    public void Test5_CircularReference_ShouldReturnCircularRefError()
+    public void CircularRefErrorTest()
     {
         _table.SetExpression("A3", "=B3");
         _table.SetExpression("B3", "=A3");
@@ -78,7 +78,7 @@ public class CalculationTests
     }
 
     [TestMethod]
-    public void Test6_NonExistentReference_ShouldReturnRefError()
+    public void NonExistantCellRefErrorTest()
     {
         _table.SetExpression("C3", "=X99 * 10");
 
@@ -87,7 +87,7 @@ public class CalculationTests
     }
 
     [TestMethod]
-    public void Test7_ClearingCell_ShouldUpdateDependenciesWithZero()
+    public void AutomaticDependaciesUpdateWithZeroTest()
     {
         _table.SetExpression("A2", "10");
         _table.SetExpression("B2", "=A2 * 2");
@@ -102,7 +102,7 @@ public class CalculationTests
     }
 
     [TestMethod]
-    public void Test8_MismatchedParentheses_ShouldReturnSyntaxError()
+    public void MismatchingParenthesesErrorTest()
     {
         _table.SetExpression("D3", "=5 * (10 + 2");
 
@@ -111,7 +111,7 @@ public class CalculationTests
     }
 
     [TestMethod]
-    public void Test9_DecimalDivisionPrecision_ShouldBeHigh()
+    public void DecimalDivisionPrecisionTest()
     {
         _table.SetExpression("A4", "=10 / 3");
 
