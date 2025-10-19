@@ -2,8 +2,5 @@
 
 public sealed record Address(string Value)
 {
-    public static implicit operator Address(string value)
-    {
-        return new Address(value);
-    }
+    public static implicit operator Address(string value) => new(value);
 };

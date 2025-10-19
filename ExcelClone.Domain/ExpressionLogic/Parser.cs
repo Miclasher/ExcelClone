@@ -14,10 +14,14 @@ public sealed class Parser
         try
         {
             if (string.IsNullOrWhiteSpace(expression))
+            {
                 return new ValueNode(string.Empty);
+            }
 
-            if (!expression.StartsWith("="))
+            if (!expression.StartsWith('='))
+            {
                 return ParseAsLiteral(expression);
+            }
 
             _tokens = Tokenizer.Tokenize(expression[1..]);
             _position = 0;
@@ -110,22 +114,35 @@ public sealed class Parser
     }
     private Token Consume(TokenType type, string message)
     {
-        if (Check(type)) return Advance();
+        if (Check(type))
+        {
+            return Advance();
+        }
+
         throw new Exception(message);
     }
     private bool Check(TokenType type) => !IsAtEnd() && Peek().Type == type;
-    private Token Advance() { if (!IsAtEnd()) _position++; return Previous(); }
+    private Token Advance() { if (!IsAtEnd())
+        {
+            _position++;
+        }
+
+        return Previous(); }
     private bool IsAtEnd() => Peek().Type == TokenType.Eof;
     private Token Peek() => _tokens[_position];
     private Token Previous() => _tokens[_position - 1];
-    private AstNode ParseAsLiteral(string term)
+    private ValueNode ParseAsLiteral(string term)
     {
-        if (decimal.TryParse(term, out decimal decimalValue))
+        if (decimal.TryParse(term, out var decimalValue))
         {
             return new ValueNode(decimalValue);
         }
         
-        if (bool.TryParse(term, out var boolVal)) return new ValueNode(boolVal);
+        if (bool.TryParse(term, out var boolVal))
+        {
+            return new ValueNode(boolVal);
+        }
+
         return new ValueNode(term);
     }
 }

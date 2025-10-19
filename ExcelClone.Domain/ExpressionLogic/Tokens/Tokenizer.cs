@@ -30,7 +30,7 @@ public static class Tokenizer
     public static List<Token> Tokenize(string source)
     {
         var tokens = new List<Token>();
-        int position = 0;
+        var position = 0;
         while (position < source.Length)
         {
             if (char.IsWhiteSpace(source[position])) { position++; continue; }
@@ -53,7 +53,10 @@ public static class Tokenizer
                     break;
                 }
             }
-            if (!matchFound) throw new Exception($"Unexpected character at position {position}");
+            if (!matchFound)
+            {
+                throw new Exception($"Unexpected character at position {position}");
+            }
         }
         tokens.Add(new Token(TokenType.Eof, "", null, position));
         return tokens;

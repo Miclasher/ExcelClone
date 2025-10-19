@@ -46,7 +46,10 @@ public class Evaluator
         var evaluatedArgs = fcn.Arguments.Select(Evaluate).ToList();
         
         var firstError = evaluatedArgs.FirstOrDefault(arg => arg.Type == CellValueType.String);
-        if (firstError.Type == CellValueType.String) return firstError;
+        if (firstError.Type == CellValueType.String)
+        {
+            return firstError;
+        }
 
         var decimalArgs = new List<decimal>();
         foreach (var arg in evaluatedArgs)
@@ -55,10 +58,16 @@ public class Evaluator
             {
                 decimalArgs.Add(decVal);
             }
-            else return new CellValue("#VALUE!");
+            else
+            {
+                return new CellValue("#VALUE!");
+            }
         }
 
-        if (decimalArgs.Count == 0) return new CellValue("#N/A");
+        if (decimalArgs.Count == 0)
+        {
+            return new CellValue("#N/A");
+        }
 
         return fcn.FunctionName switch
         {
@@ -73,8 +82,15 @@ public class Evaluator
         var left = Evaluate(opNode.Left);
         var right = Evaluate(opNode.Right);
 
-        if (left.Type == CellValueType.String) return left;
-        if (right.Type == CellValueType.String) return right;
+        if (left.Type == CellValueType.String)
+        {
+            return left;
+        }
+
+        if (right.Type == CellValueType.String)
+        {
+            return right;
+        }
 
         if (left.TryGetBool(out var leftBool) && right.TryGetBool(out var rightBool))
         {
