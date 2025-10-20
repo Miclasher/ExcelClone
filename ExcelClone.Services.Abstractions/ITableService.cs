@@ -1,11 +1,15 @@
-﻿namespace ExcelClone.Services.Abstractions;
+﻿using ExcelClone.Shared;
+
+namespace ExcelClone.Services.Abstractions;
 
 public interface ITableService
 {
-    void AddRow(int index);
-    void RemoveRow(int index);
-    void AddColumn(int index);
-    void RemoveColumn(int index);
+    Task<TableDto?> GetTableDtoAsync(string tableId);
+    Task UpdateCellAsync(string tableId, EditCellRequest request);
+    Task SaveTableToDriveAsync(string tableId);
 
-    void UpdateCell(string address, string rawExpression);
+    Task AddRowAsync(string tableId, int rowIndex);
+    Task RemoveRowAsync(string tableId, int rowIndex);
+    Task AddColumnAsync(string tableId, int colIndex);
+    Task RemoveColumnAsync(string tableId, int colIndex);
 }

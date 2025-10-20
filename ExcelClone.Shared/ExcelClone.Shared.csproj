@@ -6,8 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\ExcelClone.Shared\ExcelClone.Shared.csproj" />
-  </ItemGroup>
-
 </Project>

@@ -6,4 +6,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ExcelClone.Domain\ExcelClone.Domain.csproj" />
+    <ProjectReference Include="..\ExcelClone.Infrastructure\ExcelClone.Infrastructure.csproj" />
+    <ProjectReference Include="..\ExcelClone.Services.Abstractions\ExcelClone.Services.Abstractions.csproj" />
+    <ProjectReference Include="..\ExcelClone.Services\ExcelClone.Services.csproj" />
+    <ProjectReference Include="..\ExcelClone.Shared\ExcelClone.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -9,7 +9,7 @@ public sealed class Cell
 {
     private AstNode? _astNode;
     
-    public Cell(Address address)
+    public Cell(string address)
     {
         Address = address;
         RawExpression = string.Empty;
@@ -17,11 +17,11 @@ public sealed class Cell
         Dependencies = [];
     }
 
-    public Address Address { get; private set; }
+    public string Address { get; private set; }
     public string RawExpression {get; private set; }
     public CellValue Value { get; set; }
     
-    public HashSet<Address> Dependencies { get; private set; }
+    public HashSet<string> Dependencies { get; private set; }
 
     public void SetExpression(string expression, Parser parser)
     {

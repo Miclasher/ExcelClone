@@ -1,8 +1,82 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model ExcelClone.Presentation.ViewModels.TableViewModel
+@{
+    ViewData["Title"] = $"Таблиця: {Model.TableId}";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<style>
+    .spreadsheet-table { border-collapse: collapse; table-layout: fixed; }
+    .spreadsheet-table th, .spreadsheet-table td { border: 1px solid #dee2e6; padding: 8px; height: 25px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .spreadsheet-table th { background-color: #f8f9fa; font-weight: bold; text-align: center; }
+    .spreadsheet-table .cell-link { display: block; width: 100%; height: 100%; text-decoration: none; color: inherit; }
+    .spreadsheet-table .selected { border: 2px solid #0d6efd; }
+    .formula-bar { display: flex; align-items: center; gap: 10px; margin: 1rem 0; }
+    .formula-bar .cell-label { font-size: 0.9rem; padding: 8px; border: 1px solid #ced4da; border-radius: 4px; background-color: #e9ecef; min-width: 50px; text-align: center; }
+</style>
+
+<h1>Електронна таблиця: @Model.TableId</h1>
+
+@if (TempData["StatusMessage"] != null)
+{
+    <div class="alert alert-info">@TempData["StatusMessage"]</div>
+}
+
+<!-- Форма для керування таблицею -->
+<form method="post">
+    <input type="hidden" name="tableId" value="@Model.TableId" />
+    <input type="hidden" name="selectedCellAddress" value="@Model.SelectedCellAddress" />
+
+    <!-- Панель інструментів -->
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary" asp-action="AddRow">Додати рядок</button>
+        <button type="submit" class="btn btn-primary" asp-action="AddColumn">Додати стовпчик</button>
+        <button type="submit" class="btn btn-success" asp-action="Save">Зберегти в Google Drive</button>
+    </div>
+
+    <!-- Рядок формул -->
+    <div class="formula-bar">
+        <span class="cell-label">@Model.SelectedCellAddress</span>
+        <input type="text" name="cellExpression" class="form-control" value="@Model.SelectedCellExpression" />
+        <input type="hidden" name="cellAddress" value="@Model.SelectedCellAddress" />
+        <button type="submit" class="btn btn-secondary" asp-action="EditCell">Оновити</button>
+    </div>
+</form>
+
+<!-- Відображення таблиці -->
+@if (Model.Table != null)
+{
+    <div class="table-responsive">
+        <table class="spreadsheet-table">
+            <thead>
+                <tr>
+                    <th></th> <!-- Куточок -->
+                    @for (int c = 0; c < Model.Table.Cells[0].Count; c++)
+                    {
+                        <th>@( (char)('A' + c) )</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @for (int r = 0; r < Model.Table.Cells.Count; r++)
+                {
+                    <tr>
+                        <th>@(r + 1)</th> <!-- Номер рядка -->
+                        @for (int c = 0; c < Model.Table.Cells[r].Count; c++)
+                        {
+                            var cell = Model.Table.Cells[r][c];
+                            var isSelected = cell.Address.Equals(Model.SelectedCellAddress, StringComparison.OrdinalIgnoreCase);
+                            <td class="@(isSelected ? "selected" : "")">
+                                <a class="cell-link" asp-action="Index" asp-route-id="@Model.TableId" asp-route-selected="@cell.Address">
+                                    @cell.DisplayValue
+                                </a>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <p>Не вдалося завантажити таблицю.</p>
+}

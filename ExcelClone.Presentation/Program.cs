@@ -1,3 +1,8 @@
+using ExcelClone.Domain.Repository;
+using ExcelClone.Infrastructure;
+using ExcelClone.Services;
+using ExcelClone.Services.Abstractions;
+
 namespace ExcelClone.Presentation;
 
 public class Program
@@ -8,6 +13,11 @@ public class Program
 
         // Add services to the container.
         builder.Services.AddControllersWithViews();
+
+        builder.Services.AddMemoryCache();
+        builder.Services.AddSingleton<GoogleDriveRepository>();
+        builder.Services.AddSingleton<ITableRepository, HybridTableRepository>();
+        builder.Services.AddScoped<ITableService, TableService>();
 
         var app = builder.Build();
 

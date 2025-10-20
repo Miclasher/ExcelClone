@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ExcelClone.Domain\ExcelClone.Domain.csproj" />
     <ProjectReference Include="..\ExcelClone.Services.Abstractions\ExcelClone.Services.Abstractions.csproj" />
   </ItemGroup>
 

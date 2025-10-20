@@ -4,10 +4,10 @@ namespace ExcelClone.Domain.ExpressionLogic.AstNodes;
 
 public class CellReferenceNode : AstNode
 {
-    public CellReferenceNode(Address cellAddress)
+    public CellReferenceNode(string cellAddress)
     {
         CellAddress = cellAddress;
     }
 
-    public Address CellAddress { get; }
+    public string CellAddress { get; }
 }
