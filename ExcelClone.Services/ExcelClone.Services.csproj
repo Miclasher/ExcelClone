@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ExcelClone.Services.Abstractions\ExcelClone.Services.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>
