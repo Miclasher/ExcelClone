@@ -1,5 +1,4 @@
-﻿using ExcelClone.Domain.Cells;
-using ExcelClone.Domain.ExpressionLogic.AstNodes;
+﻿using ExcelClone.Domain.ExpressionLogic.AstNodes;
 using ExcelClone.Domain.ExpressionLogic.Tokens;
 
 namespace ExcelClone.Domain.ExpressionLogic;
@@ -122,12 +121,15 @@ public sealed class Parser
         throw new Exception(message);
     }
     private bool Check(TokenType type) => !IsAtEnd() && Peek().Type == type;
-    private Token Advance() { if (!IsAtEnd())
+    private Token Advance()
+    {
+        if (!IsAtEnd())
         {
             _position++;
         }
 
-        return Previous(); }
+        return Previous();
+    }
     private bool IsAtEnd() => Peek().Type == TokenType.Eof;
     private Token Peek() => _tokens[_position];
     private Token Previous() => _tokens[_position - 1];
@@ -137,7 +139,7 @@ public sealed class Parser
         {
             return new ValueNode(decimalValue);
         }
-        
+
         if (bool.TryParse(term, out var boolVal))
         {
             return new ValueNode(boolVal);

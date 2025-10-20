@@ -69,7 +69,7 @@ public readonly struct CellValue
             cellValue = _boolValue;
             return true;
         }
-        
+
         cellValue = _boolValue;
         return false;
     }

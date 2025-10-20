@@ -42,9 +42,9 @@ public class Evaluator
     }
 
     private CellValue PerformFunctionCall(FunctionCallNode fcn)
-    { 
+    {
         var evaluatedArgs = fcn.Arguments.Select(Evaluate).ToList();
-        
+
         var firstError = evaluatedArgs.FirstOrDefault(arg => arg.Type == CellValueType.String);
         if (firstError.Type == CellValueType.String)
         {

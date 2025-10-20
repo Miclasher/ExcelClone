@@ -1,6 +1,4 @@
-﻿using ExcelClone.Domain.Cells;
-
-namespace ExcelClone.Domain.ExpressionLogic.AstNodes;
+﻿namespace ExcelClone.Domain.ExpressionLogic.AstNodes;
 
 public class CellReferenceNode : AstNode
 {

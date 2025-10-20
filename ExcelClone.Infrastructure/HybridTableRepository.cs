@@ -21,10 +21,10 @@ public class HybridTableRepository : ITableRepository
     {
         var cacheKey = id.ToUpper();
         if (_memoryCache.TryGetValue(cacheKey, out Table? table))
-        { 
+        {
             return table;
         }
-        
+
         try
         {
             var persistentTable = await _persistentRepository.LoadAsync(id);

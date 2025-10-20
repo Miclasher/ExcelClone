@@ -2,8 +2,6 @@
 using ExcelClone.Domain.ExpressionLogic;
 using ExcelClone.Domain.ExpressionLogic.AstNodes;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using static System.Text.RegularExpressions.Regex;
 
 namespace ExcelClone.Domain.Tables;
@@ -14,7 +12,7 @@ public class Table
 
     private readonly ConcurrentDictionary<string, Cell> _cells = new();
     private readonly Parser _parser = new();
-    
+
     private readonly ConcurrentDictionary<string, HashSet<string>> _dependents = new();
 
     public Table(string id)
@@ -48,11 +46,11 @@ public class Table
         ArgumentNullException.ThrowIfNull(address);
 
         var cell = GetCell(address);
-        
+
         var oldDependencies = new HashSet<string>(cell.Dependencies);
-        
+
         cell.SetExpression(expression, _parser);
-        
+
         foreach (var oldDep in oldDependencies)
         {
             if (_dependents.TryGetValue(oldDep, out var dependents))
@@ -60,7 +58,7 @@ public class Table
                 dependents.Remove(address);
             }
         }
-        
+
         foreach (var newDep in cell.Dependencies)
         {
             if (!_dependents.TryGetValue(newDep, out var dependents))
@@ -70,14 +68,14 @@ public class Table
             }
             dependents.Add(address);
         }
-        
+
         RecalculateAll();
     }
 
     private void RecalculateAll()
     {
         var calculationOrder = GetCalculationOrder();
-        
+
         foreach (var address in calculationOrder)
         {
             if (_cells.TryGetValue(address, out var cell))
@@ -86,13 +84,13 @@ public class Table
             }
         }
     }
-    
+
     private List<string> GetCalculationOrder()
     {
         var result = new List<string>();
         var visited = new HashSet<string>();
         var temporaryMark = new HashSet<string>();
-        
+
         foreach (var address in _cells.Keys)
         {
             if (!visited.Contains(address))
@@ -100,27 +98,27 @@ public class Table
                 if (!Visit(address, visited, temporaryMark, result))
                 {
                     MarkCircularReferences(temporaryMark);
-                    
+
                     temporaryMark.Clear();
                 }
             }
         }
-        
+
         return result;
     }
-    
+
     private bool Visit(string address, HashSet<string> visited, HashSet<string> temporaryMark, List<string> result)
     {
         if (temporaryMark.Contains(address))
         {
             return false;
         }
-        
+
         if (visited.Contains(address))
         {
             return true;
         }
-        
+
         temporaryMark.Add(address);
 
         if (_cells.TryGetValue(address, out var cell))
@@ -130,14 +128,14 @@ public class Table
                 return false;
             }
         }
-        
+
         temporaryMark.Remove(address);
         visited.Add(address);
         result.Add(address);
-        
+
         return true;
     }
-    
+
     private void MarkCircularReferences(HashSet<string> circularCells)
     {
         foreach (var address in circularCells)
@@ -155,7 +153,8 @@ public class Table
         var expressionBuilder = new AstStringBuilder();
 
         var cellsToRemove = isDelete
-            ? _cells.Values.Where(c => {
+            ? _cells.Values.Where(c =>
+            {
                 var (col, row) = ParseAddress(c.Address);
                 return (rowOffset != 0 && row == startRow) || (colOffset != 0 && col == startCol);
             }).ToHashSet()
