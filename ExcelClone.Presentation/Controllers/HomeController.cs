@@ -49,9 +49,23 @@ public class HomeController : Controller
     }
 
     [HttpPost]
+    public async Task<IActionResult> RemoveRow(string tableId, string selectedCellAddress)
+    {
+        await _tableService.RemoveLastRowAsync(tableId);
+        return RedirectToAction("Index", new { id = tableId, selected = selectedCellAddress });
+    }
+
+    [HttpPost]
     public async Task<IActionResult> AddColumn(string tableId, string selectedCellAddress)
     {
         await _tableService.AddColumnAsync(tableId);
+        return RedirectToAction("Index", new { id = tableId, selected = selectedCellAddress });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> RemoveColumn(string tableId, string selectedCellAddress)
+    {
+        await _tableService.RemoveLastColumnAsync(tableId);
         return RedirectToAction("Index", new { id = tableId, selected = selectedCellAddress });
     }
 

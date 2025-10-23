@@ -1,7 +1,7 @@
 ﻿using ExcelClone.Domain.Cells;
 using ExcelClone.Domain.ExpressionLogic;
 using System.Collections.Concurrent;
-using static System.Text.RegularExpressions.Regex;
+using static ExcelClone.Domain.Tables.AddressFormater;
 
 namespace ExcelClone.Domain.Tables;
 
@@ -17,6 +17,26 @@ public class Table
     public Table(string id)
     {
         Id = id;
+    }
+
+    public (int MaxCol, int MaxRow) GetDimensions()
+    {
+        var maxRow = -1;
+        var maxCol = -1;
+
+        if (_cells.IsEmpty)
+        {
+            return (9, 19);
+        }
+
+        foreach (var address in _cells.Keys)
+        {
+            var (col, row) = ParseAddress(address);
+            if (row > maxRow) maxRow = row;
+            if (col > maxCol) maxCol = col;
+        }
+
+        return (Math.Max(maxCol, 9), Math.Max(maxRow, 19));
     }
 
     public void RemoveLastRow()
@@ -55,19 +75,6 @@ public class Table
             }
         }
         RecalculateAll();
-    }
-
-    private void ClearCellDependencies(Cell cell, string address)
-    {
-        foreach (var oldDep in cell.Dependencies)
-        {
-            if (_dependents.TryGetValue(oldDep, out var dependents))
-            {
-                dependents.Remove(address);
-            }
-        }
-
-        _dependents.TryRemove(address, out _);
     }
 
     public ICollection<Cell> GetAllCells()
@@ -201,53 +208,16 @@ public class Table
         }
     }
 
-    public (int MaxCol, int MaxRow) GetDimensions()
+    private void ClearCellDependencies(Cell cell, string address)
     {
-        var maxRow = -1;
-        var maxCol = -1;
-
-        if (_cells.IsEmpty)
+        foreach (var oldDep in cell.Dependencies)
         {
-            return (9, 19);
+            if (_dependents.TryGetValue(oldDep, out var dependents))
+            {
+                dependents.Remove(address);
+            }
         }
 
-        foreach (var address in _cells.Keys)
-        {
-            var (col, row) = ParseAddress(address);
-            if (row > maxRow) maxRow = row;
-            if (col > maxCol) maxCol = col;
-        }
-
-        return (Math.Max(maxCol, 9), Math.Max(maxRow, 19));
-    }
-
-    public static (int col, int row) ParseAddress(string address)
-    {
-        var match = Match(address.ToUpper(), @"([A-Z]+)(\d+)");
-        if (!match.Success) return (-1, -1);
-
-        var colStr = match.Groups[1].Value;
-        var row = int.Parse(match.Groups[2].Value) - 1;
-
-        var col = 0;
-        foreach (var t in colStr)
-        {
-            col = col * 26 + (t - 'A' + 1);
-        }
-        return (col - 1, row);
-    }
-
-    public static string FormatAddress(int col, int row)
-    {
-        if (col < 0 || row < 0) return "#REF!";
-        var colStr = "";
-        var c = col + 1;
-        while (c > 0)
-        {
-            var m = (c - 1) % 26;
-            colStr = (char)('A' + m) + colStr;
-            c = (c - m) / 26;
-        }
-        return $"{colStr}{row + 1}";
+        _dependents.TryRemove(address, out _);
     }
 }

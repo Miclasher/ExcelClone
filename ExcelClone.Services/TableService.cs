@@ -79,7 +79,7 @@ public class TableService : ITableService
             var rowList = new List<CellDto>();
             for (var c = 0; c <= maxCol; c++)
             {
-                var address = Table.FormatAddress(c, r);
+                var address = AddressFormater.FormatAddress(c, r);
                 rowList.Add(cellMap.TryGetValue(address, out var cell)
                     ? new CellDto(cell.Address, cell.RawExpression, cell.Value.ToString())
                     : new CellDto(address, "", ""));
@@ -98,7 +98,7 @@ public class TableService : ITableService
             var rowList = new List<CellDto>();
             for (var c = 0; c < cols; c++)
             {
-                rowList.Add(new CellDto(Table.FormatAddress(c, r), "", ""));
+                rowList.Add(new CellDto(AddressFormater.FormatAddress(c, r), "", ""));
             }
             grid.Add(rowList);
         }
