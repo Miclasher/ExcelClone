@@ -44,14 +44,14 @@ public class HomeController : Controller
     [HttpPost]
     public async Task<IActionResult> AddRow(string tableId, string selectedCellAddress)
     {
-        await _tableService.AddRowAsync(tableId, 0);
+        await _tableService.AddRowAsync(tableId);
         return RedirectToAction("Index", new { id = tableId, selected = selectedCellAddress });
     }
 
     [HttpPost]
     public async Task<IActionResult> AddColumn(string tableId, string selectedCellAddress)
     {
-        await _tableService.AddColumnAsync(tableId, 0);
+        await _tableService.AddColumnAsync(tableId);
         return RedirectToAction("Index", new { id = tableId, selected = selectedCellAddress });
     }
 

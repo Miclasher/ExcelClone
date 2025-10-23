@@ -20,17 +20,63 @@ public class Table
         Id = id;
     }
 
-    public void AddRow(int rowIndex) => ShiftCells(rowIndex, -1, 1, 0);
-    public void RemoveRow(int rowIndex) => ShiftCells(rowIndex, -1, -1, 0, true);
-    public void AddColumn(int colIndex) => ShiftCells(-1, colIndex, 0, 1);
-    public void RemoveColumn(int colIndex) => ShiftCells(-1, colIndex, 0, -1, true);
-
-    public List<Cell> GetAllCells()
+    public void RemoveLastRow()
     {
-        return _cells.Values.ToList();
+        var (maxCol, maxRow) = GetDimensions();
+        if (maxRow == 0)
+        {
+            return;
+        } 
+
+        for (int c = 0; c <= maxCol; c++)
+        {
+            var address = FormatAddress(c, maxRow);
+            if (_cells.TryRemove(address, out var cell))
+            {
+                ClearCellDependencies(cell, address);
+            }
+        }
+        RecalculateAll();
     }
 
-    public Cell GetCell(string address)
+    public void RemoveLastColumn()
+    {
+        var (maxCol, maxRow) = GetDimensions();
+        if (maxCol == 0)
+        {
+            return;
+        }
+
+        for (int r = 0; r <= maxRow; r++)
+        {
+            var address = FormatAddress(maxCol, r);
+            if (_cells.TryRemove(address, out var cell))
+            {
+                ClearCellDependencies(cell, address);
+            }
+        }
+        RecalculateAll();
+    }
+
+    private void ClearCellDependencies(Cell cell, string address)
+    {
+        foreach (var oldDep in cell.Dependencies)
+        {
+            if (_dependents.TryGetValue(oldDep, out var dependents))
+            {
+                dependents.Remove(address);
+            }
+        }
+
+        _dependents.TryRemove(address, out _);
+    }
+
+    public ICollection<Cell> GetAllCells()
+    {
+        return _cells.Values;
+    }
+
+    public Cell GetOrAddCell(string address)
     {
         return _cells.GetOrAdd(address, addressOfNewCell => new Cell(addressOfNewCell));
     }
@@ -40,12 +86,26 @@ public class Table
         return _cells.TryGetValue(address, out o!);
     }
 
+    public void AddColumn()
+    {
+        var (maxCol, maxRow) = GetDimensions();
+        var newAddress = FormatAddress(maxCol + 1, 0);
+        GetOrAddCell(newAddress);
+    }
+
+    public void AddRow()
+    {
+        var (maxCol, maxRow) = GetDimensions();
+        var newAddress = FormatAddress(0, maxRow + 1);
+        GetOrAddCell(newAddress);
+    }
+
     public void SetExpression(string address, string expression)
     {
         ArgumentNullException.ThrowIfNull(expression);
         ArgumentNullException.ThrowIfNull(address);
 
-        var cell = GetCell(address);
+        var cell = GetOrAddCell(address);
 
         var oldDependencies = new HashSet<string>(cell.Dependencies);
 
@@ -61,12 +121,8 @@ public class Table
 
         foreach (var newDep in cell.Dependencies)
         {
-            if (!_dependents.TryGetValue(newDep, out var dependents))
-            {
-                dependents = new HashSet<string>();
-                _dependents[newDep] = dependents;
-            }
-            dependents.Add(address);
+            var dependentsList = _dependents.GetOrAdd(newDep, _ => new HashSet<string>());
+            dependentsList.Add(address);
         }
 
         RecalculateAll();
@@ -98,7 +154,6 @@ public class Table
                 if (!Visit(address, visited, temporaryMark, result))
                 {
                     MarkCircularReferences(temporaryMark);
-
                     temporaryMark.Clear();
                 }
             }
@@ -147,77 +202,31 @@ public class Table
         }
     }
 
-    private void ShiftCells(int startRow, int startCol, int rowOffset, int colOffset, bool isDelete = false)
+    public (int MaxCol, int MaxRow) GetDimensions()
     {
-        var updatedCellData = new Dictionary<string, string>();
-        var expressionBuilder = new AstStringBuilder();
+        var maxRow = -1;
+        var maxCol = -1;
 
-        var cellsToRemove = isDelete
-            ? _cells.Values.Where(c =>
-            {
-                var (col, row) = ParseAddress(c.Address);
-                return (rowOffset != 0 && row == startRow) || (colOffset != 0 && col == startCol);
-            }).ToHashSet()
-            : [];
-
-        foreach (var oldCell in _cells.Values)
+        if (_cells.IsEmpty)
         {
-            if (cellsToRemove.Contains(oldCell)) continue;
-
-            var (oldCol, oldRow) = ParseAddress(oldCell.Address);
-            var newRow = (rowOffset != 0 && oldRow >= startRow) ? oldRow + rowOffset : oldRow;
-            var newCol = (colOffset != 0 && oldCol >= startCol) ? oldCol + colOffset : oldCol;
-
-            if (newRow < 0 || newCol < 0) continue;
-
-            var newAddress = FormatAddress(newCol, newRow);
-
-            var originalAst = _parser.Parse(oldCell.RawExpression);
-            var updatedAst = UpdateAstReferences(originalAst, startRow, startCol, rowOffset, colOffset);
-            string newExpression = expressionBuilder.Build(updatedAst);
-
-            updatedCellData[newAddress] = newExpression;
+            return (9, 19);
         }
 
-        _cells.Clear();
-        _dependents.Clear();
-        foreach (var (address, expression) in updatedCellData)
+        foreach (var address in _cells.Keys)
         {
-            SetExpression(address, expression);
+            var (col, row) = ParseAddress(address);
+            if (row > maxRow) maxRow = row;
+            if (col > maxCol) maxCol = col;
         }
-    }
 
-    private AstNode UpdateAstReferences(AstNode node, int startRow, int startCol, int rowOffset, int colOffset)
-    {
-        return node switch
-        {
-            BinaryOperationNode bon => new BinaryOperationNode(
-                UpdateAstReferences(bon.Right, startRow, startCol, rowOffset, colOffset),
-                UpdateAstReferences(bon.Left, startRow, startCol, rowOffset, colOffset),
-                bon.Op
-                ),
-
-            FunctionCallNode fcn => new FunctionCallNode(fcn.FunctionName,
-                fcn.Arguments.Select(arg => UpdateAstReferences(arg, startRow, startCol, rowOffset, colOffset)).ToList()),
-
-            CellReferenceNode crn => new CellReferenceNode(GetShiftedAddress(crn.CellAddress, startRow, startCol, rowOffset, colOffset)),
-
-            _ => node
-        };
-    }
-
-    private string GetShiftedAddress(string address, int startRow, int startCol, int rowOffset, int colOffset)
-    {
-        var (col, row) = ParseAddress(address);
-        var newRow = (rowOffset != 0 && row >= startRow) ? row + rowOffset : row;
-        var newCol = (colOffset != 0 && col >= startCol) ? col + colOffset : col;
-        if (newRow < 0 || newCol < 0) return "#REF!";
-        return FormatAddress(newCol, newRow);
+        return (Math.Max(maxCol, 9), Math.Max(maxRow, 19));
     }
 
     public static (int col, int row) ParseAddress(string address)
     {
         var match = Match(address.ToUpper(), @"([A-Z]+)(\d+)");
+        if (!match.Success) return (-1, -1);
+
         var colStr = match.Groups[1].Value;
         var row = int.Parse(match.Groups[2].Value) - 1;
 

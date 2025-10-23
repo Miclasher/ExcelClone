@@ -8,8 +8,8 @@ public interface ITableService
     Task UpdateCellAsync(string tableId, EditCellRequest request);
     Task SaveTableToDriveAsync(string tableId);
 
-    Task AddRowAsync(string tableId, int rowIndex);
-    Task RemoveRowAsync(string tableId, int rowIndex);
-    Task AddColumnAsync(string tableId, int colIndex);
-    Task RemoveColumnAsync(string tableId, int colIndex);
+    Task AddRowAsync(string tableId);
+    Task RemoveLastRowAsync(string tableId);
+    Task AddColumnAsync(string tableId);
+    Task RemoveLastColumnAsync(string tableId);
 }

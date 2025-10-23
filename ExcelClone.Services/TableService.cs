@@ -23,31 +23,31 @@ public class TableService : ITableService
         await _repository.UpdateLiveAsync(table);
     }
 
-    public async Task AddRowAsync(string tableId, int rowIndex)
+    public async Task AddRowAsync(string tableId)
     {
         var table = await GetOrCreateTable(tableId);
-        table.AddRow(rowIndex);
+        table.AddRow();
         await _repository.UpdateLiveAsync(table);
     }
 
-    public async Task RemoveRowAsync(string tableId, int rowIndex)
+    public async Task RemoveLastRowAsync(string tableId)
     {
         var table = await GetOrCreateTable(tableId);
-        table.RemoveRow(rowIndex);
+        table.RemoveLastRow();
         await _repository.UpdateLiveAsync(table);
     }
 
-    public async Task AddColumnAsync(string tableId, int colIndex)
+    public async Task AddColumnAsync(string tableId)
     {
         var table = await GetOrCreateTable(tableId);
-        table.AddColumn(colIndex);
+        table.AddColumn();
         await _repository.UpdateLiveAsync(table);
     }
 
-    public async Task RemoveColumnAsync(string tableId, int colIndex)
+    public async Task RemoveLastColumnAsync(string tableId)
     {
         var table = await GetOrCreateTable(tableId);
-        table.RemoveColumn(colIndex);
+        table.RemoveLastColumn();
         await _repository.UpdateLiveAsync(table);
     }
 
@@ -61,7 +61,7 @@ public class TableService : ITableService
         return await _repository.LoadAsync(tableId) ?? new Table(tableId);
     }
 
-    private TableDto MapToDto(Table table)
+    private static TableDto MapToDto(Table table)
     {
         var allCells = table.GetAllCells();
         if (!allCells.Any())
@@ -71,14 +71,7 @@ public class TableService : ITableService
 
         var cellMap = allCells.ToDictionary(c => c.Address, c => c);
 
-        var maxRow = 19;
-        var maxCol = 9;
-        foreach (var cell in allCells)
-        {
-            var (col, row) = Table.ParseAddress(cell.Address);
-            if (row > maxRow) maxRow = row;
-            if (col > maxCol) maxCol = col;
-        }
+        var (maxCol, maxRow) = table.GetDimensions();
 
         var grid = new List<List<CellDto>>();
         for (var r = 0; r <= maxRow; r++)
@@ -86,7 +79,7 @@ public class TableService : ITableService
             var rowList = new List<CellDto>();
             for (var c = 0; c <= maxCol; c++)
             {
-                string address = Table.FormatAddress(c, r);
+                var address = Table.FormatAddress(c, r);
                 rowList.Add(cellMap.TryGetValue(address, out var cell)
                     ? new CellDto(cell.Address, cell.RawExpression, cell.Value.ToString())
                     : new CellDto(address, "", ""));
@@ -97,9 +90,8 @@ public class TableService : ITableService
         return new TableDto(table.Id, grid);
     }
 
-    private TableDto CreateEmptyGridDto(string id, int rows, int cols)
+    private static TableDto CreateEmptyGridDto(string id, int rows, int cols)
     {
-        var table = new Table(id);
         var grid = new List<List<CellDto>>();
         for (var r = 0; r < rows; r++)
         {
