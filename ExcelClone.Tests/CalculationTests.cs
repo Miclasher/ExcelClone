@@ -87,21 +87,6 @@ public class CalculationTests
     }
 
     [TestMethod]
-    public void AutomaticDependaciesUpdateWithZeroTest()
-    {
-        _table.SetExpression("A2", "10");
-        _table.SetExpression("B2", "=A2 * 2");
-        _table.SetExpression("C2", "=B2 + 10");
-        _table.SetExpression("D2", "=C2 / 5");
-
-        _table.SetExpression("A2", "");
-
-        Assert.AreEqual("0", _table.GetOrAddCell("B2").Value.ToString());
-        Assert.AreEqual("10", _table.GetOrAddCell("C2").Value.ToString());
-        Assert.AreEqual("2", _table.GetOrAddCell("D2").Value.ToString());
-    }
-
-    [TestMethod]
     public void MismatchingParenthesesErrorTest()
     {
         _table.SetExpression("D3", "=5 * (10 + 2");

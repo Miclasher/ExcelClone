@@ -1,72 +1,53 @@
-﻿using ExcelClone.Domain.ExpressionLogic;
-using ExcelClone.Domain.ExpressionLogic.AstNodes;
+﻿using Antlr4.Runtime.Tree;
+using ExcelClone.Domain.ExpressionLogic;
 using ExcelClone.Domain.Tables;
 
 namespace ExcelClone.Domain.Cells;
 
-public sealed class Cell
+public class Cell
 {
-    private AstNode? _astNode;
+    public string Address { get; }
+    public string RawExpression { get; private set; } = string.Empty;
+    public CellValue Value { get; set; } = new CellValue(0m);
 
-    public Cell(string address)
+    private IParseTree? _antlrTree;
+    public HashSet<string> Dependencies { get; private set; } = new();
+
+    public Cell(string address) => Address = address;
+
+    public void SetExpression(string expression, AntlrParser parser)
     {
-        Address = address;
-        RawExpression = string.Empty;
-        Value = new CellValue(string.Empty);
-        Dependencies = [];
-    }
-
-    public string Address { get; private set; }
-    public string RawExpression { get; private set; }
-    public CellValue Value { get; set; }
-
-    public HashSet<string> Dependencies { get; private set; }
-
-    public void SetExpression(string expression, Parser parser)
-    {
-        ArgumentNullException.ThrowIfNull(expression);
-
         RawExpression = expression;
-        _astNode = parser.Parse(expression);
 
-        Dependencies.Clear();
-
-        if (_astNode != null)
+        try
         {
-            ExtractDependencies(_astNode);
+            var (tree, dependencies) = parser.Parse(expression);
+            _antlrTree = tree;
+            Dependencies = dependencies;
         }
-    }
-
-    private void ExtractDependencies(AstNode node)
-    {
-        switch (node)
+        catch (Exception)
         {
-            case CellReferenceNode refNode:
-                Dependencies.Add(refNode.CellAddress);
-                break;
-
-            case BinaryOperationNode binNode:
-                ExtractDependencies(binNode.Left);
-                ExtractDependencies(binNode.Right);
-                break;
-
-            case FunctionCallNode funcNode:
-                foreach (var arg in funcNode.Arguments)
-                {
-                    ExtractDependencies(arg);
-                }
-                break;
+            _antlrTree = new ErrorNode("#SYNTAX!");
+            Dependencies.Clear();
         }
     }
 
     public void Recalculate(Table context)
     {
-        if (_astNode is null)
+        if (_antlrTree == null)
         {
+            Value = new CellValue(RawExpression);
             return;
         }
 
-        var evaluator = new Evaluator(context);
-        Value = evaluator.Evaluate(_astNode);
+        try
+        {
+            var evaluator = new CalculatorVisitor(context);
+            Value = evaluator.Visit(_antlrTree);
+        }
+        catch (Exception)
+        {
+            Value = new CellValue("#EVAL!");
+        }
     }
 }

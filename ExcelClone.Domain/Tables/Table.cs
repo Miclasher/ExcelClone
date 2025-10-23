@@ -1,6 +1,5 @@
 ﻿using ExcelClone.Domain.Cells;
 using ExcelClone.Domain.ExpressionLogic;
-using ExcelClone.Domain.ExpressionLogic.AstNodes;
 using System.Collections.Concurrent;
 using static System.Text.RegularExpressions.Regex;
 
@@ -11,7 +10,7 @@ public class Table
     public string Id { get; private init; }
 
     private readonly ConcurrentDictionary<string, Cell> _cells = new();
-    private readonly Parser _parser = new();
+    private readonly AntlrParser _parser = new();
 
     private readonly ConcurrentDictionary<string, HashSet<string>> _dependents = new();
 
