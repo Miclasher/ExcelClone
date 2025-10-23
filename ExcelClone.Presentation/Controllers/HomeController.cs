@@ -84,4 +84,9 @@ public class HomeController : Controller
 
         return RedirectToAction("Index", new { id = tableId });
     }
+
+    public IActionResult Info()
+    {
+        return View();
+    }
 }

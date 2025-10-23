@@ -8,7 +8,7 @@ public class Cell
 {
     public string Address { get; }
     public string RawExpression { get; private set; } = string.Empty;
-    public CellValue Value { get; set; } = new CellValue(0m);
+    public CellValue Value { get; set; } = new(string.Empty);
 
     private IParseTree? _antlrTree;
     public HashSet<string> Dependencies { get; private set; } = new();

@@ -1,0 +1,156 @@
+﻿@{
+    ViewData["Title"] = "Довідка";
+}
+
+<div class="container mt-4">
+    <h1 class="display-4 mb-3">Довідка по ExcelClone</h1>
+    <p class="lead">Ласкаво просимо до довідкової системи ExcelClone. Тут ви знайдете інформацію про те, як користуватися формулами та функціями.</p>
+
+    <hr class="my-4">
+
+    <!-- Основи -->
+    <div class="card mb-3">
+        <div class="card-header">
+            <h3>Основи формул</h3>
+        </div>
+        <div class="card-body">
+            <p>Усі формули мають починатися зі знаку рівності <code>=</code>.</p>
+            <p>Якщо вираз не починається з <code>=</code>, він буде інтерпретований як простий текст або число.</p>
+            <ul>
+                <li><b>Приклад формули:</b> <code>=10 + 5</code> (поверне 15)</li>
+                <li><b>Приклад тексту:</b> <code>10 + 5</code> (поверне текст "10 + 5")</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Типи даних -->
+    <div class="card mb-3">
+        <div class="card-header">
+            <h3>Підтримувані типи даних</h3>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Тип</th>
+                        <th>Приклад</th>
+                        <th>Опис</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Число</strong></td>
+                        <td><code>123</code> або <code>45.67</code></td>
+                        <td>Використовується для всіх математичних розрахунків.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Логічний</strong></td>
+                        <td><code>TRUE</code> або <code>FALSE</code></td>
+                        <td>Результат операцій порівняння (наприклад, <code>=5 > 3</code>).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Текст</strong></td>
+                        <td><code>Привіт</code></td>
+                        <td>Будь-який ввід, що не є формулою (не починається з <code>=</code>).</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Оператори -->
+    <div class="card mb-3">
+        <div class="card-header">
+            <h3>Оператори</h3>
+        </div>
+        <div class="card-body">
+            <h5>Арифметичні оператори</h5>
+            <table class="table table-sm table-bordered">
+                <thead class="table-light">
+                    <tr><th>Оператор</th><th>Назва</th><th>Приклад</th><th>Результат</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>+</code></td><td>Додавання</td><td><code>=10 + 5</code></td><td>15</td></tr>
+                    <tr><td><code>-</code></td><td>Віднімання</td><td><code>=10 - 5</code></td><td>5</td></tr>
+                    <tr><td><code>*</code></td><td>Множення</td><td><code>=10 * 5</code></td><td>50</td></tr>
+                    <tr><td><code>/</code></td><td>Ділення</td><td><code>=10 / 4</code></td><td>2.5</td></tr>
+                    <tr><td><code>^</code></td><td>Піднесення до степеня</td><td><code>=2 ^ 3</code></td><td>8</td></tr>
+                    <tr><td><code>mod</code></td><td>Залишок від ділення</td><td><code>=10 mod 3</code></td><td>1</td></tr>
+                    <tr><td><code>div</code></td><td>Цілочисельне ділення</td><td><code>=10 div 3</code></td><td>3</td></tr>
+                    <tr><td><code>-</code> (унарний)</td><td>Унарний мінус</td><td><code>=-10</code></td><td>-10</td></tr>
+                </tbody>
+            </table>
+
+            <h5 class="mt-4">Оператори порівняння</h5>
+            <table class="table table-sm table-bordered">
+                <thead class="table-light">
+                    <tr><th>Оператор</th><th>Назва</th><th>Приклад</th><th>Результат</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>=</code></td><td>Дорівнює</td><td><code>=5 = 5</code></td><td>TRUE</td></tr>
+                    <tr><td><code><></code></td><td>Не дорівнює</td><td><code>=5 <> 10</code></td><td>TRUE</td></tr>
+                    <tr><td><code>></code></td><td>Більше</td><td><code>=10 > 5</code></td><td>TRUE</td></tr>
+                    <tr><td><code><</code></td><td>Менше</td><td><code>=10 < 5</code></td><td>FALSE</td></tr>
+                    <tr><td><code>>=</code></td><td>Більше або дорівнює</td><td><code>=5 >= 5</code></td><td>TRUE</td></tr>
+                    <tr><td><code><=</code></td><td>Менше або дорівнює</td><td><code>=5 <= 4</code></td><td>FALSE</td></tr>
+                </tbody>
+            </table>
+            <p>Оператори порівняння <code>=</code> та <code><></code> також можна використовувати для логічних значень. Наприклад, <code>=TRUE <> FALSE</code> поверне <code>TRUE</code>.</p>
+        </div>
+    </div>
+
+    <!-- Функції -->
+    <div class="card mb-3">
+        <div class="card-header">
+            <h3>Вбудовані функції</h3>
+        </div>
+        <div class="card-body">
+            <p>Функції дозволяють виконувати складні операції. Аргументи функції перелічуються в дужках через кому <code>,</code>.</p>
+            <table class="table table-sm table-bordered">
+                <thead class="table-light">
+                    <tr><th>Функція</th><th>Опис</th><th>Приклад</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>mmax(арг1, арг2, ...)</code></td>
+                        <td>Повертає максимальне значення зі списку аргументів.</td>
+                        <td><code>=mmax(10, 5, 30, A1)</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>mmin(арг1, арг2, ...)</code></td>
+                        <td>Повертає мінімальне значення зі списку аргументів.</td>
+                        <td><code>=mmin(10, 5, B2)</code></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Посилання та помилки -->
+    <div class="card mb-3">
+        <div class="card-header">
+            <h3>Посилання та Помилки</h3>
+        </div>
+        <div class="card-body">
+            <h5>Посилання на клітинки</h5>
+            <p>Ви можете посилатися на значення інших клітинок, просто вказавши їхню адресу (наприклад, <code>A1</code>, <code>B22</code>).</p>
+            <p class="alert alert-info"><b>Важливо:</b> При додаванні чи видаленні рядків/стовпців формули, що посилаються на зсунуті клітинки, автоматично **не оновлюються** в цій версії.</p>
+
+            <h5 class="mt-4">Коди помилок</h5>
+            <p>Якщо ваша формула не може бути обчислена, клітинка покаже код помилки:</p>
+            <table class="table table-sm table-bordered">
+                <thead class="table-light">
+                    <tr><th>Помилка</th><th>Значення</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>#SYNTAX!</code></td><td>У формулі допущено синтаксичну помилку (наприклад, непарна кількість дужок <code>=5 * (10 + 2</code>).</td></tr>
+                    <tr><td><code>#REF!</code></td><td>Помилка посилання. Виникає при посиланні на неіснуючу клітинку (напр., <code>=Z99</code>) або при циклічному посиланні (<code>A1=B1</code> та <code>B1=A1</code>).</td></tr>
+                    <tr><td><code>#VALUE!</code></td><td>Помилка типу. Спроба виконати математичну операцію з несумісними типами (напр., <code>=10 + TRUE</code>).</td></tr>
+                    <tr><td><code>#DIV/0!</code></td><td>Спроба ділення на нуль (напр., <code>=100 / 0</code> або <code>=100 div 0</code>).</td></tr>
+                    <tr><td><code>#NAME?</code></td><td>Невідома назва. Спроба викликати функцію, якої не існує (напр., <code>=SUM(A1)</code>).</td></tr>
+                    <tr><td><code>#N/A</code></td><td>Недостатньо аргументів. Виклик функції <code>mmax</code> або <code>mmin</code> без аргументів (напр., <code>=mmax()</code>).</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
