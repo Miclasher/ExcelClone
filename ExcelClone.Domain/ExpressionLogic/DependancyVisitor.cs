@@ -2,7 +2,7 @@
 
 public class DependencyVisitor : LabCalculatorBaseVisitor<object>
 {
-    public HashSet<string> Dependencies { get; } = new();
+    public HashSet<string> Dependencies { get; } = [];
 
     public override object VisitCellReferenceAtom(LabCalculatorParser.CellReferenceAtomContext context)
     {

@@ -1,6 +1,7 @@
 ﻿using ExcelClone.Domain.Cells;
 using ExcelClone.Domain.ExpressionLogic;
 using System.Collections.Concurrent;
+using System.Text.Json.Serialization;
 using static ExcelClone.Domain.Tables.AddressFormater;
 
 namespace ExcelClone.Domain.Tables;
@@ -9,9 +10,12 @@ public class Table
 {
     public string Id { get; private init; }
 
-    private readonly ConcurrentDictionary<string, Cell> _cells = new();
-    private readonly AntlrParser _parser = new();
+    [JsonInclude]
+    [JsonPropertyName("cells")]
+    private ConcurrentDictionary<string, Cell> Cells { get; init; } = [];
 
+    private readonly AntlrParser _parser = new();
+    
     private readonly ConcurrentDictionary<string, HashSet<string>> _dependents = new();
 
     public Table(string id)
@@ -19,17 +23,25 @@ public class Table
         Id = id;
     }
 
+    [JsonConstructor]
+    public Table(string id, ConcurrentDictionary<string, Cell> cells)
+    {
+        Id = id;
+        Cells = cells ?? new();
+        RebuildDependents();
+    }
+
     public (int MaxCol, int MaxRow) GetDimensions()
     {
         var maxRow = -1;
         var maxCol = -1;
 
-        if (_cells.IsEmpty)
+        if (Cells.IsEmpty)
         {
             return (9, 19);
         }
 
-        foreach (var address in _cells.Keys)
+        foreach (var address in Cells.Keys)
         {
             var (col, row) = ParseAddress(address);
             if (row > maxRow) maxRow = row;
@@ -45,12 +57,12 @@ public class Table
         if (maxRow == 0)
         {
             return;
-        } 
+        }
 
         for (int c = 0; c <= maxCol; c++)
         {
             var address = FormatAddress(c, maxRow);
-            if (_cells.TryRemove(address, out var cell))
+            if (Cells.TryRemove(address, out var cell))
             {
                 ClearCellDependencies(cell, address);
             }
@@ -69,7 +81,7 @@ public class Table
         for (int r = 0; r <= maxRow; r++)
         {
             var address = FormatAddress(maxCol, r);
-            if (_cells.TryRemove(address, out var cell))
+            if (Cells.TryRemove(address, out var cell))
             {
                 ClearCellDependencies(cell, address);
             }
@@ -79,17 +91,17 @@ public class Table
 
     public ICollection<Cell> GetAllCells()
     {
-        return _cells.Values;
+        return Cells.Values;
     }
 
     public Cell GetOrAddCell(string address)
     {
-        return _cells.GetOrAdd(address, addressOfNewCell => new Cell(addressOfNewCell));
+        return Cells.GetOrAdd(address, addressOfNewCell => new Cell(addressOfNewCell));
     }
 
     public bool TryGetCell(string address, out Cell o)
     {
-        return _cells.TryGetValue(address, out o!);
+        return Cells.TryGetValue(address, out o!);
     }
 
     public void AddColumn()
@@ -140,7 +152,7 @@ public class Table
 
         foreach (var address in calculationOrder)
         {
-            if (_cells.TryGetValue(address, out var cell))
+            if (Cells.TryGetValue(address, out var cell))
             {
                 cell.Recalculate(this);
             }
@@ -153,7 +165,7 @@ public class Table
         var visited = new HashSet<string>();
         var temporaryMark = new HashSet<string>();
 
-        foreach (var address in _cells.Keys)
+        foreach (var address in Cells.Keys)
         {
             if (!visited.Contains(address))
             {
@@ -182,7 +194,7 @@ public class Table
 
         temporaryMark.Add(address);
 
-        if (_cells.TryGetValue(address, out var cell))
+        if (Cells.TryGetValue(address, out var cell))
         {
             if (cell.Dependencies.Any(dependency => !Visit(dependency, visited, temporaryMark, result)))
             {
@@ -201,7 +213,7 @@ public class Table
     {
         foreach (var address in circularCells)
         {
-            if (_cells.TryGetValue(address, out var cell))
+            if (Cells.TryGetValue(address, out var cell))
             {
                 cell.Value = new CellValue("#REF!");
             }
@@ -219,5 +231,18 @@ public class Table
         }
 
         _dependents.TryRemove(address, out _);
+    }
+
+    private void RebuildDependents()
+    {
+        _dependents.Clear();
+        foreach (var cell in Cells.Values)
+        {
+            foreach (var dep in cell.Dependencies)
+            {
+                var dependentsList = _dependents.GetOrAdd(dep, _ => new HashSet<string>());
+                dependentsList.Add(cell.Address);
+            }
+        }
     }
 }

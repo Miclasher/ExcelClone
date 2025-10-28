@@ -16,7 +16,7 @@ public abstract class CustomParseNode : IParseTree
         throw new NotImplementedException();
     }
 
-    ITree ITree.Parent { get; }
+    ITree? ITree.Parent { get; }
     public IParseTree Parent { get; set; } = null!;
     public object Payload { get; set; } = null!;
     public int ChildCount => 0;

@@ -69,8 +69,6 @@ public class TableService : ITableService
             return CreateEmptyGridDto(table.Id, 20, 10);
         }
 
-        var cellMap = allCells.ToDictionary(c => c.Address, c => c);
-
         var (maxCol, maxRow) = table.GetDimensions();
 
         var grid = new List<List<CellDto>>();
@@ -80,7 +78,7 @@ public class TableService : ITableService
             for (var c = 0; c <= maxCol; c++)
             {
                 var address = AddressFormater.FormatAddress(c, r);
-                rowList.Add(cellMap.TryGetValue(address, out var cell)
+                rowList.Add(table.TryGetCell(address, out var cell)
                     ? new CellDto(cell.Address, cell.RawExpression, cell.Value.ToString())
                     : new CellDto(address, "", ""));
             }

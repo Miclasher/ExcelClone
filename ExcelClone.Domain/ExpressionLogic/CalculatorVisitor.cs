@@ -74,14 +74,15 @@ public class CalculatorVisitor : LabCalculatorBaseVisitor<CellValue>
         var (left, right, error) = EvaluateBinaryOperands(context.expression(0), context.expression(1));
         if (error != null) return error.Value;
 
-        switch (context.op.Type)
+        return context.op.Type switch
         {
-            case LabCalculatorLexer.MULTIPLY: return new CellValue(left * right);
-            case LabCalculatorLexer.DIVIDE: return right != 0 ? new CellValue(left / right) : new CellValue("#DIV/0!");
-            case LabCalculatorLexer.MOD: return right != 0 ? new CellValue(left % right) : new CellValue("#DIV/0!");
-            case LabCalculatorLexer.DIV: return right != 0 ? new CellValue(Math.Truncate(left / right)) : new CellValue("#DIV/0!");
-            default: return new CellValue("#OP!");
-        }
+            LabCalculatorLexer.MULTIPLY => new CellValue(left * right),
+            LabCalculatorLexer.DIVIDE => right != 0 ? new CellValue(left / right) : new CellValue("#DIV/0!"),
+            LabCalculatorLexer.MOD => right != 0 ? new CellValue(left % right) : new CellValue("#DIV/0!"),
+            LabCalculatorLexer.DIV =>
+                right != 0 ? new CellValue(Math.Truncate(left / right)) : new CellValue("#DIV/0!"),
+            _ => new CellValue("#OP!")
+        };
     }
 
     public override CellValue VisitComparisonExpr(LabCalculatorParser.ComparisonExprContext context)
@@ -140,7 +141,7 @@ public class CalculatorVisitor : LabCalculatorBaseVisitor<CellValue>
         return base.Visit(tree);
     }
 
-    private CellValue HandleValueNode(ValueNode node) => node.Value switch
+    public static CellValue HandleValueNode(ValueNode node) => node.Value switch
     {
         decimal d => new CellValue(d),
         bool b => new CellValue(b),
@@ -163,13 +164,13 @@ public class CalculatorVisitor : LabCalculatorBaseVisitor<CellValue>
         return (0, 0, new CellValue("#VALUE!"));
     }
 
-    private (List<decimal> Decimals, CellValue? Error) ExtractDecimals(List<CellValue> values)
+    private static (List<decimal> Decimals, CellValue? Error) ExtractDecimals(List<CellValue> values)
     {
         var decimals = new List<decimal>();
         foreach (var val in values)
         {
-            if (val.Type == CellValueType.String) return (new(), val);
-            if (!val.TryGetDecimal(out var decVal)) return (new(), new CellValue("#VALUE!"));
+            if (val.Type == CellValueType.String) return ([], val);
+            if (!val.TryGetDecimal(out var decVal)) return ([], new CellValue("#VALUE!"));
             decimals.Add(decVal);
         }
         return (decimals, null);

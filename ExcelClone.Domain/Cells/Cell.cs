@@ -1,4 +1,5 @@
-﻿using Antlr4.Runtime.Tree;
+﻿using System.Text.Json.Serialization;
+using Antlr4.Runtime.Tree;
 using ExcelClone.Domain.ExpressionLogic;
 using ExcelClone.Domain.Tables;
 
@@ -14,6 +15,14 @@ public class Cell
     public HashSet<string> Dependencies { get; private set; } = new();
 
     public Cell(string address) => Address = address;
+
+    [JsonConstructor]
+    public Cell(string address, string rawExpression, CellValue value, HashSet<string> dependencies) : this(address)
+    {
+        RawExpression = rawExpression;
+        Value = value;
+        Dependencies = dependencies;
+    }
 
     public void SetExpression(string expression, AntlrParser parser)
     {

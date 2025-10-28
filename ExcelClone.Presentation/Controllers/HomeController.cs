@@ -72,15 +72,8 @@ public class HomeController : Controller
     [HttpPost]
     public async Task<IActionResult> Save(string tableId)
     {
-        try
-        {
-            await _tableService.SaveTableToDriveAsync(tableId);
-            TempData["StatusMessage"] = $"Команду на збереження для '{tableId}' надіслано.";
-        }
-        catch (NotImplementedException)
-        {
-            TempData["StatusMessage"] = "Збереження в Google Drive ще не реалізовано.";
-        }
+        await _tableService.SaveTableToDriveAsync(tableId);
+        TempData["StatusMessage"] = $"Команду на збереження для '{tableId}' надіслано.";
 
         return RedirectToAction("Index", new { id = tableId });
     }

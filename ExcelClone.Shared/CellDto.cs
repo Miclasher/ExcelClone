@@ -1,3 +1,3 @@
 ﻿namespace ExcelClone.Shared;
 
-public sealed record CellDto(string Address, string Expression, string DisplayValue);
+public sealed record CellDto(string Address, string Expression, string? DisplayValue);

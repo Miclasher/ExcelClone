@@ -15,7 +15,14 @@ public class Program
         builder.Services.AddControllersWithViews();
 
         builder.Services.AddMemoryCache();
-        builder.Services.AddSingleton<GoogleDriveRepository>();
+        builder.Services.AddSingleton<GoogleDriveRepository>(provider =>
+        {
+            var config = provider.GetRequiredService<IConfiguration>();
+            var credentialsPath = config["GoogleDrive:CredentialsPath"];
+            var folderId = config["GoogleDrive:FolderId"];
+
+            return new GoogleDriveRepository(credentialsPath, folderId);
+        });
         builder.Services.AddSingleton<ITableRepository, HybridTableRepository>();
         builder.Services.AddScoped<ITableService, TableService>();
 
