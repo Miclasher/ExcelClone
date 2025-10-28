@@ -93,7 +93,7 @@ public class CalculatorVisitor : LabCalculatorBaseVisitor<CellValue>
         if (leftVal.Type == CellValueType.String) return leftVal;
         if (rightVal.Type == CellValueType.String) return rightVal;
 
-        // Порівняння чисел
+        // Comparing decimals
         if (leftVal.TryGetDecimal(out var leftDec) && rightVal.TryGetDecimal(out var rightDec))
         {
             return context.op.Type switch
@@ -108,6 +108,7 @@ public class CalculatorVisitor : LabCalculatorBaseVisitor<CellValue>
             };
         }
 
+        // Comparing booleans
         if (leftVal.TryGetBool(out var leftBool) && rightVal.TryGetBool(out var rightBool))
         {
             return context.op.Type switch
