@@ -15,7 +15,7 @@ public class Table
     private ConcurrentDictionary<string, Cell> Cells { get; init; } = [];
 
     private readonly AntlrParser _parser = new();
-    
+
     private readonly ConcurrentDictionary<string, HashSet<string>> _dependents = new();
 
     public Table(string id)
