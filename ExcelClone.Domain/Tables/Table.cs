@@ -24,10 +24,10 @@ public class Table
     }
 
     [JsonConstructor]
-    public Table(string id, ConcurrentDictionary<string, Cell> cells)
+    public Table(string id, ConcurrentDictionary<string, Cell>? cells)
     {
         Id = id;
-        Cells = cells ?? new();
+        Cells = cells ?? new ConcurrentDictionary<string, Cell>();
         RebuildDependents();
     }
 
@@ -106,14 +106,14 @@ public class Table
 
     public void AddColumn()
     {
-        var (maxCol, maxRow) = GetDimensions();
+        var (maxCol, _) = GetDimensions();
         var newAddress = FormatAddress(maxCol + 1, 0);
         GetOrAddCell(newAddress);
     }
 
     public void AddRow()
     {
-        var (maxCol, maxRow) = GetDimensions();
+        var (_, maxRow) = GetDimensions();
         var newAddress = FormatAddress(0, maxRow + 1);
         GetOrAddCell(newAddress);
     }
