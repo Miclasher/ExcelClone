@@ -59,7 +59,7 @@ public class Table
             return;
         }
 
-        for (int c = 0; c <= maxCol; c++)
+        for (var c = 0; c <= maxCol; c++)
         {
             var address = FormatAddress(c, maxRow);
             if (Cells.TryRemove(address, out var cell))
@@ -78,7 +78,7 @@ public class Table
             return;
         }
 
-        for (int r = 0; r <= maxRow; r++)
+        for (var r = 0; r <= maxRow; r++)
         {
             var address = FormatAddress(maxCol, r);
             if (Cells.TryRemove(address, out var cell))
