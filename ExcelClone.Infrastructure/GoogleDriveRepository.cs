@@ -16,14 +16,11 @@ public class GoogleDriveRepository
     private const string UserId = "defaultUser";
     private const string TokenFolderName = "token.json";
 
-    private static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
-    {
-        WriteIndented = true,
-        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-    };
-
     public GoogleDriveRepository(string clientSecretPath, string folderId)
     {
+        ArgumentNullException.ThrowIfNull(clientSecretPath);
+        ArgumentNullException.ThrowIfNull(folderId);
+
         _clientSecretPath = clientSecretPath;
         _folderId = folderId;
         _driveService = AuthenticateAsync().GetAwaiter().GetResult();
@@ -34,11 +31,11 @@ public class GoogleDriveRepository
         try
         {
             UserCredential credential;
-            using (var stream = new FileStream(_clientSecretPath, FileMode.Open, FileAccess.Read))
+            await using (var stream = new FileStream(_clientSecretPath, FileMode.Open, FileAccess.Read))
             {
                 credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    GoogleClientSecrets.FromStream(stream).Secrets,
-                    new[] { DriveService.ScopeConstants.DriveFile },
+                    (await GoogleClientSecrets.FromStreamAsync(stream)).Secrets,
+                    [DriveService.ScopeConstants.DriveFile],
                     UserId,
                     CancellationToken.None,
                     new FileDataStore(TokenFolderName, true)
@@ -84,7 +81,7 @@ public class GoogleDriveRepository
 
             memoryStream.Position = 0;
 
-            var table = await JsonSerializer.DeserializeAsync<Table>(memoryStream, _jsonOptions);
+            var table = await JsonSerializer.DeserializeAsync<Table>(memoryStream);
             return table;
 
         }
@@ -104,7 +101,7 @@ public class GoogleDriveRepository
             fileId = await FindFileIdByNameAsync(fileName, _folderId);
 
             using var memoryStream = new MemoryStream();
-            await JsonSerializer.SerializeAsync(memoryStream, table, _jsonOptions);
+            await JsonSerializer.SerializeAsync(memoryStream, table);
             memoryStream.Position = 0;
 
             var fileMetadata = new Google.Apis.Drive.v3.Data.File() { Name = fileName };
