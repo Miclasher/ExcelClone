@@ -8,10 +8,15 @@ public class AntlrParser
     public (IParseTree Tree, HashSet<string> Dependencies) Parse(string expression)
     {
         if (string.IsNullOrWhiteSpace(expression))
+        {
             return (new ValueNode(string.Empty), new HashSet<string>());
+        }
+            
 
         if (!expression.StartsWith("="))
+        {
             return (ParseAsLiteral(expression), new HashSet<string>());
+        }
 
         var inputStream = new AntlrInputStream(expression.Substring(1));
         var lexer = new LabCalculatorLexer(inputStream);
@@ -34,9 +39,15 @@ public class AntlrParser
     private IParseTree ParseAsLiteral(string term)
     {
         if (decimal.TryParse(term, out var decVal))
+        {
             return new ValueNode(decVal);
+        }
+
         if (bool.TryParse(term, out var boolVal))
+        {
             return new ValueNode(boolVal);
+        }
+
         return new ValueNode(term);
     }
 }

@@ -44,8 +44,15 @@ public class Table
         foreach (var address in Cells.Keys)
         {
             var (col, row) = ParseAddress(address);
-            if (row > maxRow) maxRow = row;
-            if (col > maxCol) maxCol = col;
+            if (row > maxRow)
+            {
+                maxRow = row;
+            }
+
+            if (col > maxCol)
+            {
+                maxCol = col;
+            }
         }
 
         return (Math.Max(maxCol, 9), Math.Max(maxRow, 19));

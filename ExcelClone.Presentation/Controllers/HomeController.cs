@@ -1,4 +1,4 @@
-using ExcelClone.Presentation.ViewModels;
+п»їusing ExcelClone.Presentation.ViewModels;
 using ExcelClone.Services.Abstractions;
 using ExcelClone.Shared;
 using Microsoft.AspNetCore.Mvc;
@@ -35,9 +35,9 @@ public class HomeController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> EditCell(string tableId, string cellAddress, string cellExpression)
+    public async Task<IActionResult> EditCell(string tableId, string cellAddress, string? cellExpression)
     {
-        await _tableService.UpdateCellAsync(tableId, new EditCellRequest(cellAddress, cellExpression));
+        await _tableService.UpdateCellAsync(tableId, new EditCellRequest(cellAddress, cellExpression ?? string.Empty));
         return RedirectToAction("Index", new { id = tableId, selected = cellAddress });
     }
 
@@ -73,7 +73,7 @@ public class HomeController : Controller
     public async Task<IActionResult> Save(string tableId)
     {
         await _tableService.SaveTableToDriveAsync(tableId);
-        TempData["StatusMessage"] = $"Команду на збереження для '{tableId}' надіслано.";
+        TempData["StatusMessage"] = $"РўР°Р±Р»РёС†СЋ Р·С– С–РґРµРЅС‚РёС„С–РєР°С‚РѕСЂРѕРј '{tableId}' Р·Р±РµСЂРµР¶РµРЅРѕ.";
 
         return RedirectToAction("Index", new { id = tableId });
     }

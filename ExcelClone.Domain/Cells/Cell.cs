@@ -12,6 +12,7 @@ public class Cell
     public CellValue Value { get; set; } = new(string.Empty);
 
     private IParseTree? _antlrTree;
+    [JsonIgnore]
     public HashSet<string> Dependencies { get; private set; } = new();
 
     public Cell(string address) => Address = address;
@@ -21,7 +22,6 @@ public class Cell
     {
         RawExpression = rawExpression;
         Value = value;
-        Dependencies = dependencies;
     }
 
     public void SetExpression(string expression, AntlrParser parser)

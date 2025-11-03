@@ -24,6 +24,31 @@ public class CalculatorVisitor : LabCalculatorBaseVisitor<CellValue>
         return Visit(context.expression());
     }
 
+    public override CellValue VisitAtomExpr(LabCalculatorParser.AtomExprContext context)
+    {
+        return Visit(context.atom());
+    }
+
+    public override CellValue VisitUnaryExpr(LabCalculatorParser.UnaryExprContext context)
+    {
+        var value = Visit(context.expression());
+
+        if (value.Type == CellValueType.String)
+        {
+            var strVal = value.ToString();
+            return IsErrorString(strVal) ? value : new CellValue("#VALUE!");
+        }
+
+        if (!value.TryGetDecimal(out var decVal))
+        {
+            return new CellValue("#VALUE!");
+        }
+
+        return context.op.Type == LabCalculatorLexer.ADD
+            ? new CellValue(decVal)
+            : new CellValue(-decVal);
+    }
+
     public override CellValue VisitNumberAtom(LabCalculatorParser.NumberAtomContext context)
     {
         var text = context.GetText().Replace(',', '.');
@@ -44,25 +69,32 @@ public class CalculatorVisitor : LabCalculatorBaseVisitor<CellValue>
         var address = context.GetText().ToUpper();
         if (_table.TryGetCell(address, out var cell))
         {
-            return cell.Value;
+            var cellValue = cell.Value;
+            
+            // If the referenced cell contains a non-error string, treat it as 0 in numeric context
+            // or propagate error strings
+            if (cellValue.Type == CellValueType.String)
+            {
+                var strVal = cellValue.ToString();
+                if (string.IsNullOrEmpty(strVal))
+                {
+                    return new CellValue(0m); // Empty cells are treated as 0
+                }
+                // Propagate error strings, but non-error strings will be caught in operations
+            }
+            
+            return cellValue;
         }
         return new CellValue("#REF!");
-    }
-
-    public override CellValue VisitUnaryExpr(LabCalculatorParser.UnaryExprContext context)
-    {
-        var value = Visit(context.expression());
-        if (value.TryGetDecimal(out var decVal))
-        {
-            return new CellValue(-decVal);
-        }
-        return new CellValue("#VALUE!");
     }
 
     public override CellValue VisitAdditiveExpr(LabCalculatorParser.AdditiveExprContext context)
     {
         var (left, right, error) = EvaluateBinaryOperands(context.expression(0), context.expression(1));
-        if (error != null) return error.Value;
+        if (error != null)
+        {
+            return error.Value;
+        }
 
         return context.op.Type == LabCalculatorLexer.ADD
             ? new CellValue(left + right)
@@ -72,7 +104,10 @@ public class CalculatorVisitor : LabCalculatorBaseVisitor<CellValue>
     public override CellValue VisitMultiplicativeExpr(LabCalculatorParser.MultiplicativeExprContext context)
     {
         var (left, right, error) = EvaluateBinaryOperands(context.expression(0), context.expression(1));
-        if (error != null) return error.Value;
+        if (error != null)
+        {
+            return error.Value;
+        }
 
         return context.op.Type switch
         {
@@ -90,8 +125,17 @@ public class CalculatorVisitor : LabCalculatorBaseVisitor<CellValue>
         var leftVal = Visit(context.expression(0));
         var rightVal = Visit(context.expression(1));
 
-        if (leftVal.Type == CellValueType.String) return leftVal;
-        if (rightVal.Type == CellValueType.String) return rightVal;
+        if (leftVal.Type == CellValueType.String)
+        {
+            var strVal = leftVal.ToString();
+            return IsErrorString(strVal) ? leftVal : new CellValue("#VALUE!");
+        }
+
+        if (rightVal.Type == CellValueType.String)
+        {
+            var strVal = rightVal.ToString();
+            return IsErrorString(strVal) ? rightVal : new CellValue("#VALUE!");
+        }
 
         // Comparing decimals
         if (leftVal.TryGetDecimal(out var leftDec) && rightVal.TryGetDecimal(out var rightDec))
@@ -127,8 +171,15 @@ public class CalculatorVisitor : LabCalculatorBaseVisitor<CellValue>
         var args = context.expression().Select(Visit).ToList();
         var (decimals, error) = ExtractDecimals(args);
 
-        if (error != null) return error.Value;
-        if (decimals.Count == 0) return new CellValue("#N/A");
+        if (error != null)
+        {
+            return error.Value;
+        }
+
+        if (decimals.Count == 0)
+        {
+            return new CellValue("#N/A");
+        }
 
         return context.op.Type == LabCalculatorLexer.MAX
             ? new CellValue(decimals.Max())
@@ -137,8 +188,16 @@ public class CalculatorVisitor : LabCalculatorBaseVisitor<CellValue>
 
     public override CellValue Visit(IParseTree tree)
     {
-        if (tree is ValueNode vn) return HandleValueNode(vn);
-        if (tree is ErrorNode en) return new CellValue(en.Message);
+        if (tree is ValueNode vn)
+        {
+            return HandleValueNode(vn);
+        }
+
+        if (tree is ErrorNode en)
+        {
+            return new CellValue(en.Message);
+        }
+
         return base.Visit(tree);
     }
 
@@ -155,8 +214,45 @@ public class CalculatorVisitor : LabCalculatorBaseVisitor<CellValue>
         var leftVal = Visit(leftCtx);
         var rightVal = Visit(rightCtx);
 
-        if (leftVal.Type == CellValueType.String) return (0, 0, leftVal);
-        if (rightVal.Type == CellValueType.String) return (0, 0, rightVal);
+        if (leftVal.Type == CellValueType.String)
+        {
+            var strVal = leftVal.ToString();
+            // Propagate error strings, convert non-error strings to #VALUE!
+            if (IsErrorString(strVal))
+            {
+                return (0, 0, leftVal);
+            }
+            
+            // Empty string is treated as 0
+            if (string.IsNullOrEmpty(strVal))
+            {
+                leftVal = new CellValue(0m);
+            }
+            else
+            {
+                return (0, 0, new CellValue("#VALUE!"));
+            }
+        }
+
+        if (rightVal.Type == CellValueType.String)
+        {
+            var strVal = rightVal.ToString();
+            // Propagate error strings, convert non-error strings to #VALUE!
+            if (IsErrorString(strVal))
+            {
+                return (0, 0, rightVal);
+            }
+            
+            // Empty string is treated as 0
+            if (string.IsNullOrEmpty(strVal))
+            {
+                rightVal = new CellValue(0m);
+            }
+            else
+            {
+                return (0, 0, new CellValue("#VALUE!"));
+            }
+        }
 
         if (leftVal.TryGetDecimal(out var leftDec) && rightVal.TryGetDecimal(out var rightDec))
         {
@@ -170,11 +266,39 @@ public class CalculatorVisitor : LabCalculatorBaseVisitor<CellValue>
         var decimals = new List<decimal>();
         foreach (var val in values)
         {
-            if (val.Type == CellValueType.String) return ([], val);
-            if (!val.TryGetDecimal(out var decVal)) return ([], new CellValue("#VALUE!"));
+            if (val.Type == CellValueType.String)
+            {
+                var strVal = val.ToString();
+                // Propagate error strings
+                if (IsErrorString(strVal))
+                {
+                    return ([], val);
+                }
+                
+                // Empty string is treated as 0
+                if (string.IsNullOrEmpty(strVal))
+                {
+                    decimals.Add(0m);
+                    continue;
+                }
+                
+                // Non-error, non-empty strings are type errors
+                return ([], new CellValue("#VALUE!"));
+            }
+
+            if (!val.TryGetDecimal(out var decVal))
+            {
+                return ([], new CellValue("#VALUE!"));
+            }
+
             decimals.Add(decVal);
         }
         return (decimals, null);
     }
-}
 
+    private static bool IsErrorString(string? value)
+    {
+        if (string.IsNullOrEmpty(value)) return false;
+        return value.StartsWith("#") && value.EndsWith("!");
+    }
+}

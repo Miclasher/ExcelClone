@@ -7,7 +7,10 @@ public static class AddressFormater
     public static (int col, int row) ParseAddress(string address)
     {
         var match = Match(address.ToUpper(), @"([A-Z]+)(\d+)");
-        if (!match.Success) return (-1, -1);
+        if (!match.Success)
+        {
+            return (-1, -1);
+        }
 
         var colStr = match.Groups[1].Value;
         var row = int.Parse(match.Groups[2].Value) - 1;
@@ -22,7 +25,11 @@ public static class AddressFormater
 
     public static string FormatAddress(int col, int row)
     {
-        if (col < 0 || row < 0) return "#REF!";
+        if (col < 0 || row < 0)
+        {
+            return "#REF!";
+        }
+
         var colStr = "";
         var c = col + 1;
         while (c > 0)
