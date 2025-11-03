@@ -29,6 +29,7 @@ public class Table
         Id = id;
         Cells = cells ?? new ConcurrentDictionary<string, Cell>();
         RebuildDependents();
+        RebuildParseTrees();
     }
 
     public (int MaxCol, int MaxRow) GetDimensions()
@@ -251,5 +252,18 @@ public class Table
                 dependentsList.Add(cell.Address);
             }
         }
+    }
+
+    private void RebuildParseTrees()
+    {
+        foreach (var cell in Cells.Values)
+        {
+            if (!string.IsNullOrEmpty(cell.RawExpression))
+            {
+                cell.SetExpression(cell.RawExpression, _parser);
+            }
+        }
+        
+        RecalculateAll();
     }
 }
