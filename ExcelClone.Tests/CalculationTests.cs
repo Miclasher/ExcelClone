@@ -22,7 +22,7 @@ public class CalculationTests
     }
 
     [TestMethod]
-    public void DependancyChainCalculationTest()
+    public void DependencyChainCalculationTest()
     {
         _table.SetExpression("A2", "10");
         _table.SetExpression("B2", "=A2 * 2");
@@ -36,6 +36,21 @@ public class CalculationTests
         Assert.AreEqual("100", _table.GetOrAddCell("B2").Value.ToString());
         Assert.AreEqual("110", _table.GetOrAddCell("C2").Value.ToString());
         Assert.AreEqual("22", _table.GetOrAddCell("D2").Value.ToString());
+    }
+
+    [TestMethod]
+    public void DependencyChainCalculationTest2()
+    {
+        _table.SetExpression("A2", "10");
+        _table.SetExpression("B2", "=A2 * 2");
+        _table.SetExpression("C2", "=B2 + A2");
+
+        Assert.AreEqual("20", _table.GetOrAddCell("C2").Value.ToString(), "Initial chain calculation is wrong.");
+
+        _table.SetExpression("A2", "50");
+
+        Assert.AreEqual("100", _table.GetOrAddCell("B2").Value.ToString());
+        Assert.AreEqual("150", _table.GetOrAddCell("C2").Value.ToString());
     }
 
     [TestMethod]
